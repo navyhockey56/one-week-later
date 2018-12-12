@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+require 'pry'
+require 'tk'
+require 'stock-objects/options'
+require 'stock-objects/stock'
+require 'services/stock_service'
+require 'tools/tools'
+require 'ui/graphs'
+
+def reload 
+  load 'stock-objects/options.rb'
+  load 'stock-objects/stock.rb'
+  load 'services/stock_service.rb'
+  load 'tools/tools.rb'
+  load 'ui/graphs.rb'
+end
+
+Pry.start
+
+
+
