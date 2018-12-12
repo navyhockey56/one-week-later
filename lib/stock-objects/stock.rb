@@ -1,13 +1,10 @@
-class Stock 
-
+class Stock
   def initialize(quote_or_symbol)
-    
     @quote = quote_or_symbol if quote_or_symbol.class == Hash
     @quote ||= Services.stock_service.stock_quote(quote_or_symbol)
 
     @dividend_history = {}
     @charts = {}
-  
   end
 
   def [](attribute)
@@ -15,14 +12,14 @@ class Stock
   end
 
   def as_date(attribute)
-    Time.at(@quote[attribute]/1000)
+    Tools.as_date(@quote[attribute])
   end
 
   def symbol
     @quote[:symbol]
   end
 
-  def value 
+  def value
     @quote[:latestPrice]
   end
 
@@ -33,16 +30,16 @@ class Stock
   def company_info
     @quote[:company_info] ||= Services.stock_service.company_info(symbol)
   end
-  
+
   # Retrieves dividend info over the past five years
   # @param [String] time_frame - One of ['5y', '2y', '1y', 'ytd', '6m', '3m', '1m']
-  def dividends(time_frame='5y', force_update=false)
+  def dividends(time_frame = '5y', force_update = false)
     values = @dividend_history[time_frame] unless force_update
     values ||= Services.stock_service.dividends(symbol, time_frame)
     @dividend_history[time_frame] = values
   end
 
-  def chart(time_frame=nil)
+  def chart(time_frame = nil)
     if time_frame
       @charts[time_frame] ||= Services.stock_service.chart(symbol, time_frame)
     else
@@ -50,20 +47,20 @@ class Stock
     end
   end
 
-  def chart_attribute(attribute, time_frame=nil)
+  def chart_attribute(attribute, time_frame = nil)
     ch = chart(time_frame)
-    ch.map {|i| i[attribute]}
+    ch.map { |i| i[attribute] }
   end
 
-  def scatter_attr(time_frame=nil, *attributes)
+  def scatter_attr(time_frame = nil, *attributes)
     plot = {}
     attributes.each do |attr|
       plot[attr] = Tools.map_to_xy(chart_attribute(attr, time_frame))
     end
-    Graphs.scatter_plot(data: plot, title: "#{symbol} #{time_frame.to_s}")
-  end 
+    Graphs.scatter_plot(data: plot, title: "#{symbol} #{time_frame}")
+  end
 
-  def line_attr(time_frame=nil, *attributes)
+  def line_attr(time_frame = nil, *attributes)
     plot = {}
     attributes.each do |attr|
       plot[attr] = chart_attribute(attr, time_frame)
@@ -71,7 +68,7 @@ class Stock
     Graphs.line(data: plot, title: symbol)
   end
 
-  def line_diff_percent_change(time_frame=nil, attributes=[])
+  def line_diff_percent_change(time_frame = nil, *attributes)
     plot = {}
     attributes.each do |attr|
       plot[attr] = Tools.diff_percent_change(chart_attribute(attr, time_frame))
@@ -79,7 +76,7 @@ class Stock
     Graphs.line(data: plot, title: symbol)
   end
 
-  def line_percent_change(time_frame=nil, *attributes)
+  def line_percent_change(time_frame = nil, *attributes)
     plot = {}
     attributes.each do |attr|
       d = chart_attribute(attr, time_frame)
@@ -92,15 +89,14 @@ class Stock
     "#{company} (#{symbol}) - #{value}"
   end
 
-  def Stock.stocks_line_percent_change(time_frame=nil, stocks=[], *attributes)
+  def self.stocks_line_percent_change(time_frame = nil, stocks = [], *attributes)
     plot = {}
     stocks.each do |stock|
       attributes.each do |attr|
         d = stock.chart_attribute(attr, time_frame)
-        plot[(stock.symbol().downcase + ' - '  + attr.to_s).to_sym] = Tools.percent_change_from(d.first, d)
+        plot[(stock.symbol.downcase + ' - ' + attr.to_s).to_sym] = Tools.percent_change_from(d.first, d)
       end
     end
-    Graphs.line(data: plot, title: stocks.map(&:symbol).join(", "))
+    Graphs.line(data: plot, title: stocks.map(&:symbol).join(', '))
   end
-
 end

@@ -1,16 +1,21 @@
 module Services
   require 'net/http'
 
+  # The IEX address
   Address = "https://api.iextrading.com/1.0"
 
+  # Retrieves the instance of the StockService
   def self.stock_service
     Services::StockService.instance
   end
 
+  # Makes a get request to IEX
+  # @param [String] context path - The context path to hit
+  # @param [Hash] params - A hash of uri parameters
   def get(context_path = '', params={})
     uri = URI(Address + context_path)
     uri.query = URI.encode_www_form(params)
-    puts uri
+    puts "Get Request: #{uri}"
     Net::HTTP.get_response(uri)
   end
 
@@ -18,10 +23,16 @@ module Services
     get(context_path, {filter: filters})
   end
 
+  # Sanitizes and retrieves the response body.
+  # @param [?] response - The response returned by a get request
   def response_body(response)
     eval(response.body.gsub('null', 'nil'))
   end
 
+  # A suite of webservice calls to IEX.
+  #
+  # The StockService is a singleton and should be retrieved
+  # using 'Services::StockService.instance'
   class StockService
     require 'singleton'
     include Services
