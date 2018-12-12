@@ -1,13 +1,16 @@
 #!/usr/bin/env ruby
 
 require 'pry'
-require 'tk'
+#require 'tk'
 require 'stock-objects/options'
 require 'stock-objects/stock'
 require 'services/stock_service'
 require 'tools/tools'
 require 'ui/graphs'
 
+# Call this to update code while within pry.
+# Don't forget to add any new ruby files here when
+# they are created.
 def reload 
   load 'stock-objects/options.rb'
   load 'stock-objects/stock.rb'
