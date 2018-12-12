@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.summary     = 'A program to assist with the stock market'
   s.description = 'How is this different than summary...'
   s.authors     = ['Will Dengler']
-  s.email       = 'navyhockey56@.com'
+  s.email       = 'navyhockey56@gmail.com'
   s.files       = Dir['lib/**/*.rb']
 
   s.add_development_dependency 'pry'
